@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Negative Externality in Consumption: Total Ban / Quantity Regulation</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #dde3ea;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --good: #16a34a;
+      --good-soft: #dcfce7;
+      --warn: #f59e0b;
+      --warn-soft: #fef3c7;
+      --purple: #7c3aed;
+      --purple-soft: #ede9fe;
+      --shadow: 0 16px 35px rgba(23, 32, 51, 0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0edff, transparent 34%), var(--bg);
+      color: var(--ink);
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero, .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(221, 227, 234, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 850px;
+    }
+
+    .concept-box {
+      padding: 20px;
+    }
+
+    .concept-box h2, .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -0.015em;
+    }
+
+    .formula {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .formula strong { color: var(--ink); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 18px;
+    }
+
+    .control {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfcfe;
+    }
+
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .value-pill {
+      min-width: 74px;
+      text-align: center;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .hint {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.18);
+    }
+
+    button.secondary {
+      color: var(--ink);
+      background: #eef2f7;
+      box-shadow: none;
+    }
+
+    .chart-card {
+      padding: 18px;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: linear-gradient(180deg, #fff, #fbfdff);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .axis { stroke: #111827; stroke-width: 2; }
+    .gridline { stroke: #e5e7eb; stroke-width: 1; }
+    .mpb { stroke: #2563eb; stroke-width: 4; fill: none; }
+    .msb { stroke: #dc2626; stroke-width: 4; fill: none; }
+    .mpc { stroke: #16a34a; stroke-width: 4; fill: none; }
+    .guide { stroke: #334155; stroke-width: 1.6; stroke-dasharray: 6 6; }
+    .regline { stroke: #7c3aed; stroke-width: 3; stroke-dasharray: 8 6; }
+    .label { font-size: 14px; font-weight: 750; fill: #172033; }
+    .small-label { font-size: 12px; fill: #475569; font-weight: 650; }
+    .area-dwl { fill: rgba(220, 38, 38, 0.32); stroke: rgba(220, 38, 38, 1); stroke-width: 2; }
+    .area-loss { fill: rgba(220, 38, 38, 0.28); stroke: rgba(220, 38, 38, 0.95); stroke-width: 2; }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .metric .k {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric .v {
+      margin-top: 7px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .metric .s {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .metric.good { background: var(--good-soft); border-color: #bbf7d0; }
+    .metric.bad { background: var(--danger-soft); border-color: #fecaca; }
+    .metric.warn { background: var(--warn-soft); border-color: #fde68a; }
+    .metric.purple { background: var(--purple-soft); border-color: #ddd6fe; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .feedback strong { color: var(--ink); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .blue { background: #2563eb; }
+    .red { background: #dc2626; }
+    .green { background: #16a34a; }
+    .purple-dot { background: #7c3aed; }
+    .orange { background: #f59e0b; }
+
+    .table-card { margin-top: 20px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #475569;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .tag {
+      display: inline-flex;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    @media (max-width: 980px) {
+      header, .grid { grid-template-columns: 1fr; }
+      .dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .page { padding: 16px; }
+      .dashboard { grid-template-columns: 1fr; }
+      .button-row { grid-template-columns: 1fr; }
+      h1 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <section class="hero">
+        <div class="eyebrow">H2 Economics Interactive Graph</div>
+        <h1>Negative Externality in Consumption: Total Ban & Quantity Regulation</h1>
+        <p class="lead">
+          Use the slider to regulate consumption. Students can compare the free-market quantity, socially optimal quantity, and the quantity allowed under a ban or quota. The app updates welfare gain/loss and deadweight loss automatically.
+        </p>
+      </section>
+
+      <section class="card concept-box">
+        <h2>Core idea</h2>
+        <div class="formula">
+          <div><strong>Negative externality in consumption:</strong> MSC &gt; MPC because consumption imposes external costs on third parties.</div>
+          <div><strong>Free market:</strong> MPB = MPC, causing overconsumption.</div>
+          <div><strong>Social optimum:</strong> MPB = MSC.</div>
+          <div><strong>Total ban:</strong> regulated quantity = 0 units.</div>
+        </div>
+      </section>
+    </header>
+
+    <main class="grid">
+      <section class="card controls">
+        <h2>Controls</h2>
+
+        <div class="control">
+          <div class="control-row">
+            <label for="externalCost">Marginal external cost</label>
+            <span class="value-pill" id="externalCostValue">30</span>
+          </div>
+          <input id="externalCost" type="range" min="0" max="60" value="30" step="1" />
+          <p class="hint">A higher external cost pushes MSC further above MPC, increasing the welfare loss from free-market overconsumption.</p>
+        </div>
+
+        <div class="control">
+          <div class="control-row">
+            <label for="regulatedQ">Regulated quantity allowed</label>
+            <span class="value-pill" id="regulatedQValue">0</span>
+          </div>
+          <input id="regulatedQ" type="range" min="0" max="100" value="0" step="1" />
+          <p class="hint">Set this to 0 for a total ban. Move it towards the socially optimal quantity to see DWL fall.</p>
+        </div>
+
+        <div class="control">
+          <div class="control-row">
+            <label for="showAreas">Show welfare areas</label>
+            <span class="value-pill" id="showAreasValue">ON</span>
+          </div>
+          <input id="showAreas" type="range" min="0" max="1" value="1" step="1" />
+          <p class="hint">Turn this off if you want students to first identify the areas themselves.</p>
+        </div>
+
+        <div class="button-row">
+          <button id="banBtn">Total ban: Q = 0</button>
+          <button class="secondary" id="optimalBtn">Set to social optimum</button>
+        </div>
+
+        <div class="button-row">
+          <button class="secondary" id="marketBtn">Set to free market</button>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+      </section>
+
+      <section class="card chart-card">
+        <h2>Graph: MPB, MPC and MSC</h2>
+        <svg id="graph" viewBox="0 0 820 560" role="img" aria-label="Negative externality in consumption graph"></svg>
+
+        <div class="legend">
+          <span><i class="dot blue"></i>MPB</span>
+          <span><i class="dot green"></i>MPC</span>
+          <span><i class="dot red"></i>MSC</span>
+          <span><i class="dot purple-dot"></i>Regulated quantity</span>
+          <span><i class="dot red"></i>Red: Welfare loss from regulated quantity</span>
+        </div>
+        <div class="dashboard">
+          <div class="metric purple">
+            <div class="k">Regulated Q</div>
+            <div class="v" id="qRegMetric">0</div>
+            <div class="s">Units allowed after ban/quota</div>
+          </div>
+          <div class="metric">
+            <div class="k">Social optimum Q*</div>
+            <div class="v" id="qOptMetric">35</div>
+            <div class="s">Where MPB = MSC</div>
+          </div>
+          <div class="metric bad">
+            <div class="k">Current DWL</div>
+            <div class="v" id="dwlMetric">612.5</div>
+            <div class="s" id="dwlStatus">Welfare loss from regulation</div>
+          </div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+      </section>
+    </main>
+
+    <section class="card table-card">
+      <h2>Teacher notes: how to interpret the slider</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Regulated quantity</th>
+            <th>Economic meaning</th>
+            <th>Welfare effect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag">Q = 0</span></td>
+            <td>Total ban. Consumption is completely removed.</td>
+            <td>May remove external costs, but can be too strict if some units before Q* still have MPB &gt; MSC.</td>
+          </tr>
+          <tr>
+            <td><span class="tag">0 &lt; Q &lt; Q*</span></td>
+            <td>Regulation is too strict.</td>
+            <td>Society loses beneficial units where MPB exceeds MSC. This welfare loss is shown in red.</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Q = Q*</span></td>
+            <td>Regulation achieves the socially optimal consumption level.</td>
+            <td>DWL is minimised at zero. Net social welfare is maximised.</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Q* &lt; Q &lt; Qm</span></td>
+            <td>Regulation reduces but does not fully correct overconsumption.</td>
+            <td>DWL falls compared with the free market, but some overconsumption remains.</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Q = Qm</span></td>
+            <td>No effective regulation. Free market outcome remains.</td>
+            <td>DWL remains at the original market failure level.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    const graph = document.getElementById('graph');
+    const externalCost = document.getElementById('externalCost');
+    const regulatedQ = document.getElementById('regulatedQ');
+    const showAreas = document.getElementById('showAreas');
+
+    const externalCostValue = document.getElementById('externalCostValue');
+    const regulatedQValue = document.getElementById('regulatedQValue');
+    const showAreasValue = document.getElementById('showAreasValue');
+
+    const qRegMetric = document.getElementById('qRegMetric');
+    const qOptMetric = document.getElementById('qOptMetric');
+    const dwlMetric = document.getElementById('dwlMetric');
+    const dwlStatus = document.getElementById('dwlStatus');
+    const feedback = document.getElementById('feedback');
+
+    const banBtn = document.getElementById('banBtn');
+    const optimalBtn = document.getElementById('optimalBtn');
+    const marketBtn = document.getElementById('marketBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const W = 820;
+    const H = 560;
+    const margin = { left: 76, right: 36, top: 35, bottom: 72 };
+    const plotW = W - margin.left - margin.right;
+    const plotH = H - margin.top - margin.bottom;
+
+    // Linear model designed for clear A-Level teaching diagrams.
+    // Quantity range: 0 to 100. Price / benefit-cost range: 0 to 120.
+    const qMax = 100;
+    const pMax = 120;
+    const mpbIntercept = 100;
+    const mpbSlope = 1;
+    const mpcIntercept = 0;
+    const mpcSlope = 1;
+
+    const x = q => margin.left + (q / qMax) * plotW;
+    const y = p => margin.top + plotH - (p / pMax) * plotH;
+
+    function MPB(q) { return mpbIntercept - mpbSlope * q; }
+    function MSC(q, mec) { return mpcIntercept + mec + mpcSlope * q; }
+    function MPC(q) { return mpcIntercept + mpcSlope * q; }
+
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+    function fmt(n) { return Number(n).toFixed(1).replace(/\.0$/, ''); }
+
+    function linePath(fn, mec = 0) {
+      const points = [];
+      for (let q = 0; q <= 100; q += 1) {
+        points.push(`${x(q)},${y(fn(q, mec))}`);
+      }
+      return `M${points.join(' L')}`;
+    }
+
+    function areaBetweenPath(qA, qB, upperFn, lowerFn, mec) {
+      const a = clamp(Math.min(qA, qB), 0, 100);
+      const b = clamp(Math.max(qA, qB), 0, 100);
+      if (Math.abs(a - b) < 0.001) return '';
+
+      const top = [];
+      const bottom = [];
+      const steps = 28;
+      for (let i = 0; i <= steps; i++) {
+        const q = a + (b - a) * (i / steps);
+        top.push(`${x(q)},${y(upperFn(q, mec))}`);
+      }
+      for (let i = steps; i >= 0; i--) {
+        const q = a + (b - a) * (i / steps);
+        bottom.push(`${x(q)},${y(lowerFn(q, mec))}`);
+      }
+      return `M${top.join(' L')} L${bottom.join(' L')} Z`;
+    }
+
+    function welfareAreaToQ(q, mec) {
+      // Integral from 0 to q of MPB - MSC.
+      // MPB - MSC = (100 - mec) - 2q.
+      return (100 - mec) * q - q * q;
+    }
+
+    function compute() {
+      const mec = Number(externalCost.value);
+      const qReg = Number(regulatedQ.value);
+      const qMarket = 50; // MPB = MPC: 100 - q = q
+      const qOpt = clamp((100 - mec) / 2, 0, 100); // MPB = MSC: 100 - q = q + mec
+
+      const freeMarketDWL = Math.max(0, qMarket - qOpt) ** 2;
+      const currentDWL = Math.abs(welfareAreaToQ(qOpt, mec) - welfareAreaToQ(qReg, mec));
+      const welfareChange = freeMarketDWL - currentDWL;
+
+      return { mec, qReg, qMarket, qOpt, freeMarketDWL, currentDWL, welfareChange };
+    }
+
+    function draw() {
+      const { mec, qReg, qMarket, qOpt, freeMarketDWL, currentDWL, welfareChange } = compute();
+      externalCostValue.textContent = mec;
+      regulatedQValue.textContent = qReg;
+      showAreasValue.textContent = showAreas.value === '1' ? 'ON' : 'OFF';
+      qRegMetric.textContent = fmt(qReg);
+      qOptMetric.textContent = fmt(qOpt);
+      dwlMetric.textContent = fmt(currentDWL);
+
+      let status = '';
+      if (Math.abs(qReg - qOpt) < 0.5) status = 'No DWL: socially optimal quantity';
+      else if (qReg < qOpt) status = 'Welfare loss: regulation too strict';
+      else status = 'Welfare loss: overconsumption remains';
+      dwlStatus.textContent = status;
+
+      const pMarket = MPC(qMarket);
+      const pOpt = MSC(qOpt, mec);
+      const pRegMPC = MPC(qReg);
+      const pRegMSC = MSC(qReg, mec);
+
+      const gridLines = [0, 20, 40, 60, 80, 100, 120].map(p => `
+        <line class="gridline" x1="${margin.left}" y1="${y(p)}" x2="${W - margin.right}" y2="${y(p)}" />
+        <text class="small-label" x="${margin.left - 14}" y="${y(p) + 4}" text-anchor="end">${p}</text>
+      `).join('');
+
+      const qTicks = [0, 20, 40, 60, 80, 100].map(q => `
+        <line class="gridline" x1="${x(q)}" y1="${margin.top}" x2="${x(q)}" y2="${margin.top + plotH}" />
+        <text class="small-label" x="${x(q)}" y="${H - 38}" text-anchor="middle">${q}</text>
+      `).join('');
+
+      const show = showAreas.value === '1';
+      let areas = '';
+      if (show) {
+        // RED AREA = welfare loss caused by the regulated quantity.
+        // If Qreg < Q*, the loss is from useful units not consumed: MPB > MSC.
+        // If Qreg > Q*, the loss is from excessive units consumed: MSC > MPB.
+        if (qReg < qOpt) {
+          areas += `<path class="area-loss" d="${areaBetweenPath(qReg, qOpt, MPB, MSC, mec)}"></path>`;
+        } else if (qReg > qOpt) {
+          areas += `<path class="area-dwl" d="${areaBetweenPath(qOpt, qReg, MSC, MPB, mec)}"></path>`;
+        }
+      }
+
+      graph.innerHTML = `
+        ${gridLines}
+        ${qTicks}
+        <line class="axis" x1="${margin.left}" y1="${margin.top + plotH}" x2="${W - margin.right}" y2="${margin.top + plotH}" />
+        <line class="axis" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotH}" />
+
+        ${areas}
+
+        <path class="mpb" d="${linePath((q) => MPB(q))}" />
+        <path class="msb" d="${linePath((q, m) => MSC(q, m), mec)}" />
+        <path class="mpc" d="${linePath((q) => MPC(q))}" />
+
+        <line class="guide" x1="${x(qMarket)}" y1="${y(0)}" x2="${x(qMarket)}" y2="${y(pMarket)}" />
+        <line class="guide" x1="${margin.left}" y1="${y(pMarket)}" x2="${x(qMarket)}" y2="${y(pMarket)}" />
+
+        <line class="guide" x1="${x(qOpt)}" y1="${y(0)}" x2="${x(qOpt)}" y2="${y(pOpt)}" />
+        <line class="guide" x1="${margin.left}" y1="${y(pOpt)}" x2="${x(qOpt)}" y2="${y(pOpt)}" />
+
+        <line class="regline" x1="${x(qReg)}" y1="${margin.top}" x2="${x(qReg)}" y2="${margin.top + plotH}" />
+
+        <circle cx="${x(qMarket)}" cy="${y(pMarket)}" r="6" fill="#2563eb" />
+        <circle cx="${x(qOpt)}" cy="${y(pOpt)}" r="6" fill="#16a34a" />
+        <circle cx="${x(qReg)}" cy="${y(pRegMPC)}" r="5" fill="#7c3aed" />
+        <circle cx="${x(qReg)}" cy="${y(pRegMSC)}" r="5" fill="#7c3aed" />
+
+        <text class="label" x="${W - 135}" y="${y(MPB(92)) - 8}">MPB</text>
+        <text class="label" x="${W - 135}" y="${y(MSC(92, mec)) + 18}">MSC</text>
+        <text class="label" x="${W - 140}" y="${y(MPC(92)) - 8}">MPC</text>
+
+        <text class="small-label" x="${x(qMarket)}" y="${H - 18}" text-anchor="middle">Qm ${fmt(qMarket)}</text>
+        <text class="small-label" x="${x(qOpt)}" y="${H - 55}" text-anchor="middle">Q* ${fmt(qOpt)}</text>
+        <text class="small-label" x="${x(qReg)}" y="${margin.top + 18}" text-anchor="middle" fill="#7c3aed">Q regulated ${fmt(qReg)}</text>
+
+        <text class="label" x="${W / 2}" y="${H - 8}" text-anchor="middle">Quantity of units consumed</text>
+        <text class="label" x="22" y="${H / 2}" transform="rotate(-90 22 ${H / 2})" text-anchor="middle">Costs / Benefits ($)</text>
+      `;
+
+      const banText = qReg === 0
+        ? 'This is a total ban. The red area shows welfare loss from banning units that would have generated net benefit before Q*.'
+        : `This is not a total ban. The regulation allows ${fmt(qReg)} units to be consumed.`;
+
+      const compareText = Math.abs(qReg - qOpt) < 0.5
+        ? 'The regulated quantity is equal to the socially optimal quantity, so welfare loss is minimised because benefit equals social cost at the margin.'
+        : qReg < qOpt
+          ? 'The regulated quantity is below the social optimum. The red shaded area shows welfare loss from useful units not consumed, where MPB exceeds MSC.'
+          : 'The regulated quantity is above the social optimum. The red shaded area shows welfare loss from excessive units consumed, where MSC exceeds MPB.';
+
+      const welfareText = 'The red shaded area measures the welfare loss from the chosen regulated quantity compared with the social optimum.';
+
+      feedback.innerHTML = `
+        <strong>Feedback:</strong> ${banText} ${compareText} ${welfareText}
+        <br><br>
+        <strong>Original free-market DWL:</strong> ${fmt(freeMarketDWL)}. <strong>Welfare loss from regulated quantity:</strong> ${fmt(currentDWL)}.
+      `;
+    }
+
+    externalCost.addEventListener('input', draw);
+    regulatedQ.addEventListener('input', draw);
+    showAreas.addEventListener('input', draw);
+
+    banBtn.addEventListener('click', () => {
+      regulatedQ.value = 0;
+      draw();
+    });
+
+    optimalBtn.addEventListener('click', () => {
+      regulatedQ.value = Math.round(compute().qOpt);
+      draw();
+    });
+
+    marketBtn.addEventListener('click', () => {
+      regulatedQ.value = compute().qMarket;
+      draw();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      externalCost.value = 30;
+      regulatedQ.value = 0;
+      showAreas.value = 1;
+      draw();
+    });
+
+    draw();
+  </script>
+</body>
+</html>
