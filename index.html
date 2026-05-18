@@ -189,6 +189,19 @@
       box-shadow: none;
     }
 
+    button.active {
+      color: #fff;
+      background: var(--purple);
+      box-shadow: 0 10px 22px rgba(124, 58, 237, 0.28);
+      outline: 3px solid rgba(124, 58, 237, 0.18);
+    }
+
+    button.secondary.active {
+      color: #fff;
+      background: var(--purple);
+      box-shadow: 0 10px 22px rgba(124, 58, 237, 0.28);
+    }
+
     .chart-card {
       padding: 18px;
     }
@@ -353,8 +366,8 @@
   <div class="page">
     <header>
       <section class="hero">
-        <div class="eyebrow">H1 and H2 Interactive Graph</div>
-        <h1>H1 and H2 Interactive Graph</h1>
+        <div class="eyebrow">H1 and H2 Microeconomic Policies</div>
+        <h1>Negative Externality in Consumption: Total Ban &amp; Quantity Regulation</h1>
         <p class="lead">
           Use the slider to regulate consumption. Students can compare the free-market quantity, socially optimal quantity, and the quantity allowed under a ban or quota. The app updates welfare gain/loss and deadweight loss automatically.
         </p>
@@ -581,8 +594,31 @@
       return { mec, qReg, qMarket, qOpt, freeMarketDWL, currentDWL, welfareChange };
     }
 
+    function updateActiveButtons() {
+      const { mec, qReg, qMarket, qOpt } = compute();
+      const buttons = [banBtn, optimalBtn, marketBtn, resetBtn];
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      if (qReg === 0) {
+        banBtn.classList.add('active');
+      }
+
+      if (Math.abs(qReg - Math.round(qOpt)) < 0.5) {
+        optimalBtn.classList.add('active');
+      }
+
+      if (Math.abs(qReg - qMarket) < 0.5) {
+        marketBtn.classList.add('active');
+      }
+
+      if (mec === 30 && qReg === 0 && showAreas.value === '1') {
+        resetBtn.classList.add('active');
+      }
+    }
+
     function draw() {
       const { mec, qReg, qMarket, qOpt, freeMarketDWL, currentDWL, welfareChange } = compute();
+      updateActiveButtons();
       externalCostValue.textContent = mec;
       regulatedQValue.textContent = qReg;
       showAreasValue.textContent = showAreas.value === '1' ? 'ON' : 'OFF';
