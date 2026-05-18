@@ -363,9 +363,10 @@
       <section class="card concept-box">
         <h2>Core idea</h2>
         <div class="formula">
-          <div><strong>Negative externality in consumption:</strong> MSC &gt; MPC because consumption imposes external costs on third parties.</div>
+          <div><strong>Negative externality in consumption:</strong> MPB = MSB because there is no external benefit.</div>
+          <div><strong>External cost:</strong> MSC &gt; MPC because consumption imposes external costs on third parties.</div>
           <div><strong>Free market:</strong> MPB = MPC, causing overconsumption.</div>
-          <div><strong>Social optimum:</strong> MPB = MSC.</div>
+          <div><strong>Social optimum:</strong> MSB = MSC.</div>
           <div><strong>Total ban:</strong> regulated quantity = 0 units.</div>
         </div>
       </section>
@@ -381,7 +382,7 @@
             <span class="value-pill" id="externalCostValue">30</span>
           </div>
           <input id="externalCost" type="range" min="0" max="60" value="30" step="1" />
-          <p class="hint">A higher external cost pushes MSC further above MPC, increasing the welfare loss from free-market overconsumption.</p>
+          <p class="hint">A higher external cost pushes MSC further above MPC. Students should compare MSB with MSC to judge whether each unit should be consumed.</p>
         </div>
 
         <div class="control">
@@ -414,13 +415,13 @@
       </section>
 
       <section class="card chart-card">
-        <h2>Graph: MPB, MPC and MSC</h2>
+        <h2>Graph: MSB compared with MSC</h2>
         <svg id="graph" viewBox="0 0 820 560" role="img" aria-label="Negative externality in consumption graph"></svg>
 
         <div class="legend">
-          <span><i class="dot blue"></i>MPB</span>
-          <span><i class="dot green"></i>MPC</span>
+          <span><i class="dot blue"></i>MPB = MSB</span>
           <span><i class="dot red"></i>MSC</span>
+          <span><i class="dot green"></i>MPC</span>
           <span><i class="dot purple-dot"></i>Regulated quantity</span>
           <span><i class="dot red"></i>Red: Welfare loss from regulated quantity</span>
         </div>
@@ -433,7 +434,7 @@
           <div class="metric">
             <div class="k">Social optimum Q*</div>
             <div class="v" id="qOptMetric">35</div>
-            <div class="s">Where MPB = MSC</div>
+            <div class="s">Where MSB = MSC</div>
           </div>
           <div class="metric bad">
             <div class="k">Current DWL</div>
@@ -460,12 +461,12 @@
           <tr>
             <td><span class="tag">Q = 0</span></td>
             <td>Total ban. Consumption is completely removed.</td>
-            <td>May remove external costs, but can be too strict if some units before Q* still have MPB &gt; MSC.</td>
+            <td>May remove external costs, but can be too strict if some units before Q* still have MSB &gt; MSC.</td>
           </tr>
           <tr>
             <td><span class="tag">0 &lt; Q &lt; Q*</span></td>
             <td>Regulation is too strict.</td>
-            <td>Society loses beneficial units where MPB exceeds MSC. This welfare loss is shown in red.</td>
+            <td>Society loses beneficial units where MSB exceeds MSC. This welfare loss is shown in red.</td>
           </tr>
           <tr>
             <td><span class="tag">Q = Q*</span></td>
@@ -526,7 +527,8 @@
     const x = q => margin.left + (q / qMax) * plotW;
     const y = p => margin.top + plotH - (p / pMax) * plotH;
 
-    function MPB(q) { return mpbIntercept - mpbSlope * q; }
+    function MSB(q) { return mpbIntercept - mpbSlope * q; }
+    function MPB(q) { return MSB(q); }
     function MSC(q, mec) { return mpcIntercept + mec + mpcSlope * q; }
     function MPC(q) { return mpcIntercept + mpcSlope * q; }
 
@@ -561,8 +563,8 @@
     }
 
     function welfareAreaToQ(q, mec) {
-      // Integral from 0 to q of MPB - MSC.
-      // MPB - MSC = (100 - mec) - 2q.
+      // Integral from 0 to q of MSB - MSC.
+      // MSB - MSC = (100 - mec) - 2q.
       return (100 - mec) * q - q * q;
     }
 
@@ -570,7 +572,7 @@
       const mec = Number(externalCost.value);
       const qReg = Number(regulatedQ.value);
       const qMarket = 50; // MPB = MPC: 100 - q = q
-      const qOpt = clamp((100 - mec) / 2, 0, 100); // MPB = MSC: 100 - q = q + mec
+      const qOpt = clamp((100 - mec) / 2, 0, 100); // MSB = MSC: 100 - q = q + mec
 
       const freeMarketDWL = Math.max(0, qMarket - qOpt) ** 2;
       const currentDWL = Math.abs(welfareAreaToQ(qOpt, mec) - welfareAreaToQ(qReg, mec));
@@ -613,12 +615,12 @@
       let areas = '';
       if (show) {
         // RED AREA = welfare loss caused by the regulated quantity.
-        // If Qreg < Q*, the loss is from useful units not consumed: MPB > MSC.
-        // If Qreg > Q*, the loss is from excessive units consumed: MSC > MPB.
+        // If Qreg < Q*, the loss is from useful units not consumed: MSB > MSC.
+        // If Qreg > Q*, the loss is from excessive units consumed: MSC > MSB.
         if (qReg < qOpt) {
-          areas += `<path class="area-loss" d="${areaBetweenPath(qReg, qOpt, MPB, MSC, mec)}"></path>`;
+          areas += `<path class="area-loss" d="${areaBetweenPath(qReg, qOpt, MSB, MSC, mec)}"></path>`;
         } else if (qReg > qOpt) {
-          areas += `<path class="area-dwl" d="${areaBetweenPath(qOpt, qReg, MSC, MPB, mec)}"></path>`;
+          areas += `<path class="area-dwl" d="${areaBetweenPath(qOpt, qReg, MSC, MSB, mec)}"></path>`;
         }
       }
 
@@ -630,7 +632,7 @@
 
         ${areas}
 
-        <path class="mpb" d="${linePath((q) => MPB(q))}" />
+        <path class="mpb" d="${linePath((q) => MSB(q))}" />
         <path class="msb" d="${linePath((q, m) => MSC(q, m), mec)}" />
         <path class="mpc" d="${linePath((q) => MPC(q))}" />
 
@@ -647,7 +649,7 @@
         <circle cx="${x(qReg)}" cy="${y(pRegMPC)}" r="5" fill="#7c3aed" />
         <circle cx="${x(qReg)}" cy="${y(pRegMSC)}" r="5" fill="#7c3aed" />
 
-        <text class="label" x="${W - 135}" y="${y(MPB(92)) - 8}">MPB</text>
+        <text class="label" x="${W - 160}" y="${y(MSB(92)) - 8}">MPB = MSB</text>
         <text class="label" x="${W - 135}" y="${y(MSC(92, mec)) + 18}">MSC</text>
         <text class="label" x="${W - 140}" y="${y(MPC(92)) - 8}">MPC</text>
 
@@ -660,14 +662,14 @@
       `;
 
       const banText = qReg === 0
-        ? 'This is a total ban. The red area shows welfare loss from banning units that would have generated net benefit before Q*.'
+        ? 'This is a total ban. The red area shows welfare loss from banning units where MSB would have exceeded MSC before Q*.'
         : `This is not a total ban. The regulation allows ${fmt(qReg)} units to be consumed.`;
 
       const compareText = Math.abs(qReg - qOpt) < 0.5
-        ? 'The regulated quantity is equal to the socially optimal quantity, so welfare loss is minimised because benefit equals social cost at the margin.'
+        ? 'The regulated quantity is equal to the socially optimal quantity, so welfare loss is minimised because MSB equals MSC at the margin.'
         : qReg < qOpt
-          ? 'The regulated quantity is below the social optimum. The red shaded area shows welfare loss from useful units not consumed, where MPB exceeds MSC.'
-          : 'The regulated quantity is above the social optimum. The red shaded area shows welfare loss from excessive units consumed, where MSC exceeds MPB.';
+          ? 'The regulated quantity is below the social optimum. The red shaded area shows welfare loss from useful units not consumed, where MSB exceeds MSC.'
+          : 'The regulated quantity is above the social optimum. The red shaded area shows welfare loss from excessive units consumed, where MSC exceeds MSB.';
 
       const welfareText = 'The red shaded area measures the welfare loss from the chosen regulated quantity compared with the social optimum.';
 
