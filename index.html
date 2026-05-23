@@ -392,9 +392,9 @@
         <div class="control">
           <div class="control-row">
             <label for="externalCost">Marginal external cost</label>
-            <span class="value-pill" id="externalCostValue">30</span>
+            <span class="value-pill" id="externalCostValue">60</span>
           </div>
-          <input id="externalCost" type="range" min="0" max="60" value="30" step="1" />
+          <input id="externalCost" type="range" min="0" max="80" value="60" step="1" />
           <p class="hint">A higher external cost pushes MSC further above MPC. Students should compare MSB with MSC to judge whether each unit should be consumed.</p>
         </div>
 
@@ -446,7 +446,7 @@
           </div>
           <div class="metric">
             <div class="k">Social optimum Q*</div>
-            <div class="v" id="qOptMetric">35</div>
+            <div class="v" id="qOptMetric">0</div>
             <div class="s">Where MSB = MSC</div>
           </div>
           <div class="metric bad">
@@ -532,9 +532,9 @@
     // Quantity range: 0 to 100. Price / benefit-cost range: 0 to 120.
     const qMax = 100;
     const pMax = 120;
-    const mpbIntercept = 100;
+    const mpbIntercept = 80;
     const mpbSlope = 1;
-    const mpcIntercept = 0;
+    const mpcIntercept = 20;
     const mpcSlope = 1;
 
     const x = q => margin.left + (q / qMax) * plotW;
@@ -577,15 +577,15 @@
 
     function welfareAreaToQ(q, mec) {
       // Integral from 0 to q of MSB - MSC.
-      // MSB - MSC = (100 - mec) - 2q.
-      return (100 - mec) * q - q * q;
+      // MSB - MSC = (mpbIntercept - mpcIntercept - mec) - 2q.
+      return (mpbIntercept - mpcIntercept - mec) * q - q * q;
     }
 
     function compute() {
       const mec = Number(externalCost.value);
       const qReg = Number(regulatedQ.value);
-      const qMarket = 50; // MPB = MPC: 100 - q = q
-      const qOpt = clamp((100 - mec) / 2, 0, 100); // MSB = MSC: 100 - q = q + mec
+      const qMarket = clamp((mpbIntercept - mpcIntercept) / 2, 0, 100); // MPB = MPC
+      const qOpt = clamp((mpbIntercept - mpcIntercept - mec) / 2, 0, 100); // MSB = MSC
 
       const freeMarketDWL = Math.max(0, qMarket - qOpt) ** 2;
       const currentDWL = Math.abs(welfareAreaToQ(qOpt, mec) - welfareAreaToQ(qReg, mec));
@@ -611,7 +611,7 @@
         marketBtn.classList.add('active');
       }
 
-      if (mec === 30 && qReg === 0 && showAreas.value === '1') {
+      if (mec === 60 && qReg === 0 && showAreas.value === '1') {
         resetBtn.classList.add('active');
       }
     }
@@ -736,7 +736,7 @@
     });
 
     resetBtn.addEventListener('click', () => {
-      externalCost.value = 30;
+      externalCost.value = 60;
       regulatedQ.value = 0;
       showAreas.value = 1;
       draw();
